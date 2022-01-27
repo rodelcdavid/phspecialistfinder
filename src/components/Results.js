@@ -1,5 +1,12 @@
-import { Box } from "@mui/material";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
 import React, { useEffect, useState } from "react";
+import { Box, Button } from "@mui/material";
 
 const Results = ({ data, match, handleGoogleSearch }) => {
   const [visible, setVisible] = useState(match.length > 20 ? 20 : match.length);
@@ -41,93 +48,218 @@ const Results = ({ data, match, handleGoogleSearch }) => {
 
   return (
     <>
-      {/* <p style={{ textAlign: "center" }}>
-        {match.length === data.length ? "-" : `Found: ${match.length}`}
-      </p> */}
-      <Box
-        sx={{
-          padding: "0 1rem",
-          margin: "1rem auto",
-          width: "100%",
-          overflowX: "auto",
-          border: "2px solid #000",
-        }}
-      >
-        <div
-          style={{
+      {match.length === data.length ? (
+        <Box
+          sx={{
+            marginTop: "1rem",
+            border: "1px solid #aaa",
+            height: "75%",
             display: "flex",
-            fontWeight: "bolder",
-            borderBottom: "1px solid black",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            color: "#444",
           }}
         >
-          <span style={{ width: "80px" }}> </span>
-          <span style={{ width: "400px" }}>FULL NAME</span>
-          <span style={{ width: "300px" }}>SPECIALTY</span>
-          <span style={{ width: "200px" }}>MUNICIPALITY</span>
-          <span style={{ width: "200px" }}>PROVINCE</span>
-        </div>
-        {match.length === data.length ? (
-          <p style={{ textAlign: "center" }}>
-            <em>Please set search criteria first.</em>
+          <p>
+            <em>Nothing to show.</em>
           </p>
-        ) : (
-          <>
-            {rowData.map((entry, i) => {
-              return (
-                //CHange this to table
+          <p>
+            <em>Please set search criteria first</em>
+          </p>
+        </Box>
+      ) : (
+        <>
+          <TableContainer
+            // component={Paper}
+            sx={{
+              paddingBottom: "0.5rem",
+              border: "1px solid #aaa",
+              // width: "90vw",
+              margin: "1rem auto",
+              // boxShadow: 2,
+              overflow: "auto",
+              height: "75%",
 
-                <Box
-                  sx={{
-                    display: "flex",
-                    cursor: "pointer",
-                    transition: "all 150ms ease-in",
-                    "&:hover": {
-                      backgroundColor: "rgba(0,0,0,0.2)",
-                      fontWeight: "bolder",
-                    },
-                  }}
-                  key={i}
-                  onClick={() => handleGoogleSearch(entry.fullname)}
-                >
-                  <span style={{ width: "80px" }}>{entry.id}</span>
-                  <span style={{ width: "400px" }}>{entry.fullname}</span>
-                  <span style={{ width: "300px" }}>{entry.specialty} </span>
-                  <span style={{ width: "200px" }}>{entry.municipality} </span>
-                  <span style={{ width: "200px" }}>{entry.province} </span>
-                </Box>
-              );
-            })}
+              "&::-webkit-scrollbar": {
+                height: "7px",
+                width: "7px",
+              },
+              "&::-webkit-scrollbar-track": {
+                background: "#f1f1f1",
+              },
+              "&::-webkit-scrollbar-thumb": {
+                background: "#888",
+              },
+            }}
+          >
+            <Table
+              sx={{
+                minWidth: 650,
+                // boxShadow: "0 0 10px rgba(0,0,0,0.23)",
+
+                "& > thead > tr > th": {
+                  fontWeight: 800,
+                },
+                "& > tbody > tr:hover": {
+                  backgroundColor: "#1769aa",
+                  cursor: "pointer",
+
+                  "& td": {
+                    color: "#fff",
+                  },
+                },
+              }}
+              aria-label="simple table"
+            >
+              <TableHead>
+                <TableRow>
+                  <TableCell>#</TableCell>
+                  <TableCell>FULL NAME</TableCell>
+                  <TableCell>SPECIALTY</TableCell>
+                  <TableCell>MUNICIPALITY</TableCell>
+                  <TableCell>PROVINCE</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {rowData.map((entry) => (
+                  <TableRow
+                    key={entry.id}
+                    onClick={() => handleGoogleSearch(entry.fullname)}
+                    // sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  >
+                    <TableCell>{entry.id}</TableCell>
+                    <TableCell>{entry.fullname}</TableCell>
+                    <TableCell>{entry.specialty}</TableCell>
+                    <TableCell>{entry.municipality}</TableCell>
+                    <TableCell>{entry.province}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
             <div
               style={{
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
+                justifyContent: "center",
               }}
             >
-              <p>
+              <p style={{ padding: "1rem" }}>
                 <em>
-                  - Showing {visible} out of {match.length} -
+                  {match.length !== 0
+                    ? `- Showing ${visible} out of ${match.length} results -`
+                    : "No results found."}
                 </em>
               </p>
-              {match.length > 20 && visible != match.length && (
-                <button
-                  style={{
-                    width: "200px",
+              {match.length > 20 && visible !== match.length && (
+                <Button
+                  variant="contained"
+                  sx={{
+                    width: "300px",
                     margin: "0 auto",
-                    padding: "0.5rem",
-                    cursor: "pointer",
                   }}
                   onClick={handleLoadMore}
                 >
                   Load more
-                </button>
+                </Button>
               )}
             </div>
-          </>
-        )}
-      </Box>
+          </TableContainer>
+        </>
+      )}
     </>
   );
+
+  //   return (
+  //     <>
+  //       {/* <p style={{ textAlign: "center" }}>
+  //         {match.length === data.length ? "-" : `Found: ${match.length}`}
+  //       </p> */}
+  //       <Box
+  //         sx={{
+  //           padding: "0 1rem",
+  //           margin: "1rem auto",
+  //           width: "100%",
+  //           overflowX: "auto",
+  //           border: "2px solid #000",
+  //         }}
+  //       >
+  //         <div
+  //           style={{
+  //             display: "flex",
+  //             fontWeight: "bolder",
+  //             borderBottom: "1px solid black",
+  //           }}
+  //         >
+  //           <span style={{ width: "80px" }}> </span>
+  //           <span style={{ width: "400px" }}>FULL NAME</span>
+  //           <span style={{ width: "300px" }}>SPECIALTY</span>
+  //           <span style={{ width: "200px" }}>MUNICIPALITY</span>
+  //           <span style={{ width: "200px" }}>PROVINCE</span>
+  //         </div>
+  //         {match.length === data.length ? (
+  //           <p style={{ textAlign: "center" }}>
+  //             <em>Please set search criteria first.</em>
+  //           </p>
+  //         ) : (
+  //           <>
+  //             {rowData.map((entry, i) => {
+  //               return (
+  //                 //CHange this to table
+
+  //                 <Box
+  //                   sx={{
+  //                     display: "flex",
+  //                     cursor: "pointer",
+  //                     transition: "all 150ms ease-in",
+  //                     "&:hover": {
+  //                       backgroundColor: "rgba(0,0,0,0.2)",
+  //                       fontWeight: "bolder",
+  //                     },
+  //                   }}
+  //                   key={i}
+  //                   onClick={() => handleGoogleSearch(entry.fullname)}
+  //                 >
+  //                   <span style={{ width: "80px" }}>{entry.id}</span>
+  //                   <span style={{ width: "400px" }}>{entry.fullname}</span>
+  //                   <span style={{ width: "300px" }}>{entry.specialty} </span>
+  //                   <span style={{ width: "200px" }}>{entry.municipality} </span>
+  //                   <span style={{ width: "200px" }}>{entry.province} </span>
+  //                 </Box>
+  //               );
+  //             })}
+  //             <div
+  //               style={{
+  //                 display: "flex",
+  //                 flexDirection: "column",
+  //                 alignItems: "center",
+  //               }}
+  //             >
+  //               <p>
+  //                 <em>
+  //                   - Showing {visible} out of {match.length} -
+  //                 </em>
+  //               </p>
+  //               {match.length > 20 && visible != match.length && (
+  //                 <button
+  //                   style={{
+  //                     width: "200px",
+  //                     margin: "0 auto",
+  //                     padding: "0.5rem",
+  //                     cursor: "pointer",
+  //                   }}
+  //                   onClick={handleLoadMore}
+  //                 >
+  //                   Load more
+  //                 </button>
+  //               )}
+  //             </div>
+  //           </>
+  //         )}
+  //       </Box>
+  //     </>
+  //   );
 };
 
 export default Results;

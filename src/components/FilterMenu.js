@@ -17,8 +17,17 @@ const FilterMenu = ({
       sx={{
         width: "60%",
         display: "flex",
-        gap: "3rem",
+        gap: "10px",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
         margin: "0 auto",
+
+        "@media (min-width:1000px)": {
+          margin: "1rem auto 0",
+          gap: "3rem",
+          flexDirection: "row",
+        },
       }}
     >
       <FormControl sx={{ width: "200px" }}>
