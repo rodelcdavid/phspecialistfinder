@@ -34,6 +34,7 @@ const FilterChip = ({
         if (filter.length) {
           return (
             <Chip
+              key={i}
               label={filter}
               variant="outlined"
               color="primary"

@@ -5,12 +5,19 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Box, Button } from "@mui/material";
+import { MatchContext } from "../context/MatchContext";
 
-const Results = ({ data, match, handleGoogleSearch }) => {
+const Results = ({ data }) => {
+  const { match } = useContext(MatchContext);
+
   const [visible, setVisible] = useState(match.length > 20 ? 20 : match.length);
   const displayMatch = match.slice(0, visible);
+
+  const handleGoogleSearch = (fullname) => {
+    window.open("http://google.com/search?q=" + fullname);
+  };
 
   const handleLoadMore = () => {
     match.length - visible >= 20

@@ -1,17 +1,77 @@
 import { Box, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
-import React from "react";
+import React, { useContext, useEffect, useMemo } from "react";
+import { FilterContext } from "../context/FilterContext";
+import { MatchContext } from "../context/MatchContext";
 
-const FilterMenu = ({
-  province,
-  municipality,
-  specialty,
-  uniqueMunicipality,
-  uniqueProvince,
-  uniqueSpecialty,
-  handleMunicipalityChange,
-  handleProvinceChange,
-  handleSpecialtyChange,
-}) => {
+const FilterMenu = ({ data }) => {
+  const {
+    province,
+    municipality,
+    specialty,
+    setProvince,
+    setMunicipality,
+    setSpecialty,
+  } = useContext(FilterContext);
+
+  const { setMatch } = useContext(MatchContext);
+
+  //TODO: Move to filter menu component OR to utils
+  //Get filter data
+  const provinceArray = useMemo(() => {
+    return data.map((item) => {
+      return item[item.length - 3];
+    });
+  }, []);
+
+  const specialtyArray = useMemo(() => {
+    return data.map((item) => {
+      return item[item.length - 5];
+    });
+  }, []);
+
+  const municipalityArray = useMemo(() => {
+    return data
+      .filter((item) => item[item.length - 3] === province)
+      .map((item) => {
+        return item[item.length - 4];
+      });
+  }, [province]);
+
+  //Find unique values
+  function onlyUnique(value, index, self) {
+    return self.indexOf(value) === index;
+  }
+
+  const uniqueProvince = provinceArray.filter(onlyUnique).sort();
+  const uniqueSpecialty = specialtyArray.filter(onlyUnique).sort();
+  const uniqueMunicipality = municipalityArray.filter(onlyUnique).sort();
+
+  useEffect(() => {
+    let result = data;
+
+    if (province.length) {
+      // setLoading(true);
+      result = result.filter((item) => item[item.length - 3] === province);
+    }
+
+    if (specialty.length) {
+      // setLoading(true);
+
+      result = result.filter((item) => item[item.length - 5] === specialty);
+    }
+
+    if (municipality.length) {
+      // setLoading(true);
+
+      result = result.filter((item) => item[item.length - 4] === municipality);
+    }
+
+    setTimeout(() => {
+      // setLoading(false);
+      setMatch(result);
+    }, 200);
+  }, [province, specialty, municipality]);
+
   return (
     <Box
       sx={{
@@ -37,7 +97,10 @@ const FilterMenu = ({
           id="demo-simple-select"
           value={province}
           label="Province"
-          onChange={handleProvinceChange}
+          onChange={(e) => {
+            setProvince(e.target.value);
+            setMunicipality("");
+          }}
         >
           <MenuItem value="">-</MenuItem>
           {uniqueProvince.map((item, i) => {
@@ -58,7 +121,7 @@ const FilterMenu = ({
           defaultValue=""
           value={municipality}
           label="Municipality"
-          onChange={handleMunicipalityChange}
+          onChange={(e) => setMunicipality(e.target.value)}
         >
           <MenuItem value="">-</MenuItem>
           {uniqueMunicipality.map((item, i) => {
@@ -78,7 +141,7 @@ const FilterMenu = ({
           id="demo-simple-select"
           value={specialty}
           label="Specialty"
-          onChange={handleSpecialtyChange}
+          onChange={(e) => setSpecialty(e.target.value)}
         >
           <MenuItem value="">-</MenuItem>
 

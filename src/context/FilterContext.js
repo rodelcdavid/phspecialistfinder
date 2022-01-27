@@ -1,30 +1,23 @@
 import { createContext, useState } from "react";
-import filterReducer from "./filterReducer";
 
-const initialState = {
-  filters: { 
-    province: "",
-    municipality: "",
-    specialty: "",
-  }
-
-};
-
-export const FilterContext = createContext(initialState);
+//YOU CREATED FILTERCONTEXT BC YOU HAVE TO ACCESS THE STATES IN FILTERMENUMOBILE
+//ANY OTHER SOLUTIONS FOR THIS?
+export const FilterContext = createContext();
 
 export const FilterProvider = (props) => {
   const [province, setProvince] = useState(""); //Filter context
   const [specialty, setSpecialty] = useState(""); //Filter context
-  const [municipality, setMunicipality] = useState(""); //Filter Context
-
-const [state, dispatch] = useReducer(filterReducer, initialState);
-
-const 
+  const [municipality, setMunicipality] = useState(""); //Filter
 
   return (
     <FilterContext.Provider
       value={{
-     filters: state.filters
+        province,
+        specialty,
+        municipality,
+        setProvince,
+        setSpecialty,
+        setMunicipality,
       }}
     >
       {props.children}

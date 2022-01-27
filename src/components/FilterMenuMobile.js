@@ -1,24 +1,51 @@
 import { Tune } from "@mui/icons-material";
 import { Box, Dialog, DialogTitle, IconButton } from "@mui/material";
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { FilterContext } from "../context/FilterContext";
+import { MatchContext } from "../context/MatchContext";
 import FilterChip from "./FilterChip";
 import FilterMenu from "./FilterMenu";
 
-const FilterMenuMobile = ({
-  province,
-  municipality,
-  specialty,
-  setProvince,
-  setMunicipality,
-  setSpecialty,
-  uniqueMunicipality,
-  uniqueProvince,
-  uniqueSpecialty,
-  handleMunicipalityChange,
-  handleProvinceChange,
-  handleSpecialtyChange,
-}) => {
+const FilterMenuMobile = ({ data }) => {
   const [openDialog, setOpenDialog] = useState(false);
+
+  const {
+    province,
+    municipality,
+    specialty,
+    setProvince,
+    setMunicipality,
+    setSpecialty,
+  } = useContext(FilterContext);
+
+  const { setMatch } = useContext(MatchContext);
+
+  //CUSTOM HOOK??
+  useEffect(() => {
+    let result = data;
+
+    if (province.length) {
+      // setLoading(true);
+      result = result.filter((item) => item[item.length - 3] === province);
+    }
+
+    if (specialty.length) {
+      // setLoading(true);
+
+      result = result.filter((item) => item[item.length - 5] === specialty);
+    }
+
+    if (municipality.length) {
+      // setLoading(true);
+
+      result = result.filter((item) => item[item.length - 4] === municipality);
+    }
+
+    setTimeout(() => {
+      // setLoading(false);
+      setMatch(result);
+    }, 200);
+  }, [province, specialty, municipality]);
 
   return (
     <Box
@@ -46,17 +73,7 @@ const FilterMenuMobile = ({
           Set search criteria
         </DialogTitle>
         <Box sx={{ width: "20rem", padding: "1rem" }}>
-          <FilterMenu
-            province={province}
-            municipality={municipality}
-            specialty={specialty}
-            uniqueMunicipality={uniqueMunicipality}
-            uniqueProvince={uniqueProvince}
-            uniqueSpecialty={uniqueSpecialty}
-            handleMunicipalityChange={handleMunicipalityChange}
-            handleProvinceChange={handleProvinceChange}
-            handleSpecialtyChange={handleSpecialtyChange}
-          />
+          <FilterMenu data={data} />
         </Box>
       </Dialog>
     </Box>
