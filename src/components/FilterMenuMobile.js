@@ -1,51 +1,26 @@
 import { Tune } from "@mui/icons-material";
-import { Box, Dialog, DialogTitle, IconButton } from "@mui/material";
-import React, { useContext, useEffect, useState } from "react";
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogTitle,
+  Divider,
+  IconButton,
+} from "@mui/material";
+import React, { useContext, useState } from "react";
 import { FilterContext } from "../context/FilterContext";
-import { MatchContext } from "../context/MatchContext";
 import FilterChip from "./FilterChip";
 import FilterMenu from "./FilterMenu";
+import { data } from "../data";
+import { useFilter } from "../hooks/useFilter";
 
-const FilterMenuMobile = ({ data }) => {
+const FilterMenuMobile = () => {
   const [openDialog, setOpenDialog] = useState(false);
 
-  const {
-    province,
-    municipality,
-    specialty,
-    setProvince,
-    setMunicipality,
-    setSpecialty,
-  } = useContext(FilterContext);
+  const { province, municipality, specialty } = useContext(FilterContext);
 
-  const { setMatch } = useContext(MatchContext);
-
-  //CUSTOM HOOK??
-  useEffect(() => {
-    let result = data;
-
-    if (province.length) {
-      // setLoading(true);
-      result = result.filter((item) => item[item.length - 3] === province);
-    }
-
-    if (specialty.length) {
-      // setLoading(true);
-
-      result = result.filter((item) => item[item.length - 5] === specialty);
-    }
-
-    if (municipality.length) {
-      // setLoading(true);
-
-      result = result.filter((item) => item[item.length - 4] === municipality);
-    }
-
-    setTimeout(() => {
-      // setLoading(false);
-      setMatch(result);
-    }, 200);
-  }, [province, specialty, municipality]);
+  useFilter();
 
   return (
     <Box
@@ -62,19 +37,25 @@ const FilterMenuMobile = ({ data }) => {
       >
         <Tune />
       </IconButton>
-      <FilterChip
-        filterList={[province, municipality, specialty]}
-        setProvince={setProvince}
-        setMunicipality={setMunicipality}
-        setSpecialty={setSpecialty}
-      />
+      <FilterChip filterList={[province, municipality, specialty]} />
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
-        <DialogTitle sx={{ borderBottom: "1px solid #aaa", fontWeight: 800 }}>
-          Set search criteria
-        </DialogTitle>
-        <Box sx={{ width: "20rem", padding: "1rem" }}>
+        <DialogTitle sx={{ fontWeight: 800 }}>Set search criteria</DialogTitle>
+        <Divider />
+        <Box
+          sx={{
+            padding: "1rem",
+            width: "15rem",
+            "@media (min-width: 450px)": {
+              width: "20rem",
+            },
+          }}
+        >
           <FilterMenu data={data} />
         </Box>
+        <Divider />
+        <DialogActions>
+          <Button onClick={() => setOpenDialog(false)}>Ok</Button>
+        </DialogActions>
       </Dialog>
     </Box>
   );
