@@ -1,9 +1,10 @@
 import { Box, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
-import React, { useContext, useEffect, useMemo } from "react";
+import React, { useContext, useMemo, useRef } from "react";
 import { FilterContext } from "../context/FilterContext";
-import { MatchContext } from "../context/MatchContext";
+import { filters } from "../filters";
+import { useFilter } from "../hooks/useFilter";
 
-const FilterMenu = ({ data }) => {
+const FilterMenu = () => {
   const {
     province,
     municipality,
@@ -13,64 +14,28 @@ const FilterMenu = ({ data }) => {
     setSpecialty,
   } = useContext(FilterContext);
 
-  const { setMatch } = useContext(MatchContext);
-
-  //TODO: Move to filter menu component OR to utils
-  //Get filter data
-  const provinceArray = useMemo(() => {
-    return data.map((item) => {
-      return item[item.length - 3];
+  let provinceArray = useRef([]);
+  let municipalityArray = useRef([]);
+  useMemo(() => {
+    filters.locations.forEach((location) => {
+      if (!provinceArray.current.includes(location[0])) {
+        provinceArray.current.push(location[0]);
+      }
     });
   }, []);
 
-  const specialtyArray = useMemo(() => {
-    return data.map((item) => {
-      return item[item.length - 5];
+  useMemo(() => {
+    municipalityArray.current = [];
+    filters.locations.forEach((location) => {
+      if (province === location[0]) {
+        municipalityArray.current.push(location[1]);
+      }
     });
-  }, []);
-
-  const municipalityArray = useMemo(() => {
-    return data
-      .filter((item) => item[item.length - 3] === province)
-      .map((item) => {
-        return item[item.length - 4];
-      });
   }, [province]);
 
-  //Find unique values
-  function onlyUnique(value, index, self) {
-    return self.indexOf(value) === index;
-  }
+  const specialtyArray = filters.specialties;
 
-  const uniqueProvince = provinceArray.filter(onlyUnique).sort();
-  const uniqueSpecialty = specialtyArray.filter(onlyUnique).sort();
-  const uniqueMunicipality = municipalityArray.filter(onlyUnique).sort();
-
-  useEffect(() => {
-    let result = data;
-
-    if (province.length) {
-      // setLoading(true);
-      result = result.filter((item) => item[item.length - 3] === province);
-    }
-
-    if (specialty.length) {
-      // setLoading(true);
-
-      result = result.filter((item) => item[item.length - 5] === specialty);
-    }
-
-    if (municipality.length) {
-      // setLoading(true);
-
-      result = result.filter((item) => item[item.length - 4] === municipality);
-    }
-
-    setTimeout(() => {
-      // setLoading(false);
-      setMatch(result);
-    }, 200);
-  }, [province, specialty, municipality]);
+  useFilter();
 
   return (
     <Box
@@ -83,6 +48,10 @@ const FilterMenu = ({ data }) => {
         alignItems: "center",
         margin: "0 auto",
 
+        "& > div": {
+          width: "200px",
+        },
+
         "@media (min-width:1000px)": {
           margin: "1rem auto 0",
           gap: "3rem",
@@ -90,20 +59,21 @@ const FilterMenu = ({ data }) => {
         },
       }}
     >
-      <FormControl sx={{ width: "200px" }}>
+      <FormControl>
         <InputLabel id="demo-simple-select-label">Province</InputLabel>
         <Select
           labelId="demo-simple-select-label"
           id="demo-simple-select"
           value={province}
           label="Province"
+          autoWidth
           onChange={(e) => {
             setProvince(e.target.value);
             setMunicipality("");
           }}
         >
           <MenuItem value="">-</MenuItem>
-          {uniqueProvince.map((item, i) => {
+          {provinceArray.current.map((item, i) => {
             return (
               <MenuItem value={item} key={i}>
                 {item}
@@ -113,7 +83,7 @@ const FilterMenu = ({ data }) => {
         </Select>
       </FormControl>
 
-      <FormControl sx={{ width: "200px" }}>
+      <FormControl>
         <InputLabel id="demo-simple-select-label">Municipality</InputLabel>
         <Select
           labelId="demo-simple-select-label"
@@ -124,7 +94,7 @@ const FilterMenu = ({ data }) => {
           onChange={(e) => setMunicipality(e.target.value)}
         >
           <MenuItem value="">-</MenuItem>
-          {uniqueMunicipality.map((item, i) => {
+          {municipalityArray.current.map((item, i) => {
             return (
               <MenuItem value={item} key={i}>
                 {item}
@@ -134,7 +104,7 @@ const FilterMenu = ({ data }) => {
         </Select>
       </FormControl>
 
-      <FormControl sx={{ width: "200px" }}>
+      <FormControl>
         <InputLabel id="demo-simple-select-label">Specialty</InputLabel>
         <Select
           labelId="demo-simple-select-label"
@@ -145,7 +115,7 @@ const FilterMenu = ({ data }) => {
         >
           <MenuItem value="">-</MenuItem>
 
-          {uniqueSpecialty.map((item, i) => {
+          {specialtyArray.map((item, i) => {
             return (
               <MenuItem value={item} key={i}>
                 {item}

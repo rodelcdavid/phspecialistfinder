@@ -1,13 +1,12 @@
 import { Chip } from "@mui/material";
 import { Box } from "@mui/system";
-import React from "react";
+import React, { useContext } from "react";
+import { FilterContext } from "../context/FilterContext";
 
-const FilterChip = ({
-  filterList,
-  setProvince,
-  setMunicipality,
-  setSpecialty,
-}) => {
+const FilterChip = ({ filterList }) => {
+  const { setProvince, setMunicipality, setSpecialty } =
+    useContext(FilterContext);
+
   const handleOnDelete = (filterCategory) => {
     switch (filterCategory) {
       case 0:
@@ -21,6 +20,7 @@ const FilterChip = ({
         break;
     }
   };
+
   return (
     <Box
       sx={{
